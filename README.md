@@ -1,7 +1,6 @@
 # elbr: Tools for Analyzing AWS ELB Logs
 
-[![Build Status](https://travis-ci.org/nealrichardson/elbr.png?branch=master)](https://travis-ci.org/nealrichardson/elbr)  [![codecov](https://codecov.io/gh/nealrichardson/elbr/branch/master/graph/badge.svg)](https://codecov.io/gh/nealrichardson/elbr)
-[![cran](https://www.r-pkg.org/badges/version-last-release/elbr)](https://cran.r-project.org/package=elbr)
+[![Build Status](https://travis-ci.org/nealrichardson/elbr.png?branch=master)](https://travis-ci.org/nealrichardson/elbr)  [![codecov](https://codecov.io/gh/nealrichardson/elbr/branch/master/graph/badge.svg)](https://codecov.io/gh/nealrichardson/elbr) [![Build status](https://ci.appveyor.com/api/projects/status/g72a7u4bu7sjwm26/branch/master?svg=true)](https://ci.appveyor.com/project/nealrichardson/elbr/branch/master) [![cran](https://www.r-pkg.org/badges/version-last-release/elbr)](https://cran.r-project.org/package=elbr)
 
 ## Installing
 
