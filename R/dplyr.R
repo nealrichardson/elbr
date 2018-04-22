@@ -20,6 +20,13 @@
 #' Default is the current working directory, unless `options(elbr.dir)` is set.
 #' @return An S3-class 'ELBLog' object.
 #' @export
+#' @examples
+#' \dontrun{
+#' ELBLog("2017-12-15", "2018-01-15") %>%
+#'     select(elb_status_code, request) %>%
+#'     filter(elb_status_code == 200) %>%
+#'     collect()
+#' }
 ELBLog <- function (start_date=NULL, end_date=start_date, path=getOption("elbr.dir", ".")) {
     structure(list(
         select=list(),
@@ -45,6 +52,44 @@ filter.ELBLog <- function (.data, ...) {
     return(.data)
 }
 
+#' ELBLog method for setting a line filter
+#'
+#' This function lets you use the `line_filter` parameter of [read_elb()] when
+#' querying over many files.
+#' @param .data The `ELBLog` object
+#' @param pattern A string pattern or regular expression to pass to the
+#' shell command `egrep`. This enables you to filter down the rows of the log
+#' file to read in much more quickly than reading the whole file into R and then
+#' subsetting the data in memory---if you know a good filtering string to use.
+#' It is best only to use this parameter if you're looking for a relatively
+#' uncommon pattern; if your `pattern` matches all lines, it will be slower
+#' than omitting it.
+#' @return `.data` with `pattern` set on it. No I/O happens until you call
+#' [collect()] or [summarize()].
+#' @export
+#' @examples
+#' \dontrun{
+#' ELBLog() %>%
+#'     select(elb_status_code, request) %>%
+#'     line_filter(" -1 -1 504 ") %>%
+#'     collect()
+#' }
+line_filter <- function (.data, pattern) {
+    UseMethod("line_filter")
+}
+
+#' @export
+line_filter.default <- function (.data, pattern) {
+    stop('"line_filter" is not defined for objects of class ', class(.data)[1],
+        call.=FALSE)
+}
+
+#' @export
+line_filter.ELBLog <- function (.data, pattern) {
+    .data$line_filter <- pattern
+    return(.data)
+}
+
 #' @importFrom dplyr collect
 #' @importFrom rlang !!!
 #' @importFrom tidyselect vars_select
@@ -56,9 +101,9 @@ collect.ELBLog <- function (x, ...) {
 map_elb <- function (.data, FUN=NULL, ...) {
     ## Read data from all files, following the select/filter instructions
     if (is.null(FUN)) {
-        fn <- function (f) collect_one(f, vars=colnames, filter=.data$filter)
+        fn <- function (f) collect_one(f, vars=colnames, filter=.data$filter, lines=.data$line_filter)
     } else {
-        fn <- function (f) FUN(collect_one(f, vars=colnames, filter=.data$filter), ...)
+        fn <- function (f) FUN(collect_one(f, vars=colnames, filter=.data$filter, lines=.data$line_filter), ...)
     }
 
     colnames <- eval(formals(read_elb)[["columns"]])
@@ -74,8 +119,8 @@ map_elb <- function (.data, FUN=NULL, ...) {
     return(dfs)
 }
 
-collect_one <- function (file, vars, filter) {
-    df <- read_elb(file, columns=vars)
+collect_one <- function (file, vars, filter, lines) {
+    df <- read_elb(file, columns=vars, line_filter=lines)
     for (f in filter) {
         df <- filter(df, !!! f)
     }

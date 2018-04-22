@@ -2,10 +2,13 @@
 
 S3method(collect,ELBLog)
 S3method(filter,ELBLog)
+S3method(line_filter,ELBLog)
+S3method(line_filter,default)
 S3method(select,ELBLog)
 S3method(summarise,ELBLog)
 export(ELBLog)
 export(analyzeELB)
+export(line_filter)
 export(mapELB)
 export(parse_request)
 export(read_elb)

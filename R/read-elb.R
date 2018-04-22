@@ -9,6 +9,13 @@
 #'
 #' Default is to return everything.
 #' @param ... Additional arguments passed to [readr::read_delim()]
+#' @param line_filter A string pattern or regular expression to pass to the
+#' shell command `egrep`. This enables you to filter down the rows of the log
+#' file to read in much more quickly than reading the whole file into R and then
+#' subsetting the data in memory---if you know a good filtering string to use.
+#' It is best only to use this parameter if you're looking for a relatively
+#' uncommon pattern; if your `line_filter` matches all lines, it will be slower
+#' than omitting it.
 #' @return A tibble.
 #' @export
 #' @importFrom readr read_delim
@@ -18,16 +25,31 @@ read_elb <- function (file,
                             "response_processing_time", "elb_status_code",
                             "backend_status_code", "received_bytes", "sent_bytes",
                             "request", "user_agent", "ssl_cipher", "ssl_protocol"),
+                    line_filter=NULL,
                     ...) {
 
-    ## Allow specifying only a selection of columns. Fill in "col_types" with "-"
+    ## Allow specifying a selection of columns. Fill in "col_types" with "-"
     all_cols <- eval(formals(sys.function())[["columns"]])
     col_types <- unlist(strsplit("Tcccdddiiiicccc", ""))
-
     columns <- match.arg(columns, several.ok=TRUE)
     keepcols <- all_cols %in% columns
     col_types[!keepcols] <- "-"
 
+    if (!is.null(line_filter)) {
+        ## Shell out to egrep
+        ## If there are no matches, egrep returns status 1, which creates
+        ## a warning in R (with system2 when stdout=TRUE)
+        file <- suppressWarnings(
+            system2("egrep", c(shQuote(line_filter), file), stdout=TRUE)
+        )
+        nmatches <- length(file)
+        ## Concatenate
+        file <- paste(file, collapse="\n")
+        if (nmatches < 2) {
+            ## Append a newline so that readr recognizes this as literal data
+            file <- paste0(file, "\n")
+        }
+    }
     out <- read_delim(
         file,
         col_names=all_cols[keepcols],

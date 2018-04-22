@@ -8,7 +8,7 @@ read_elb(file, columns = c("timestamp", "elb", "client_port", "backend_port",
   "request_processing_time", "backend_processing_time",
   "response_processing_time", "elb_status_code", "backend_status_code",
   "received_bytes", "sent_bytes", "request", "user_agent", "ssl_cipher",
-  "ssl_protocol"), ...)
+  "ssl_protocol"), line_filter = NULL, ...)
 }
 \arguments{
 \item{file}{A file name or connection. See \code{\link[readr:read_delim]{readr::read_delim()}}}
@@ -20,6 +20,14 @@ of \code{read_delim()}'s \code{col_names}, these may be specified out of order, 
 \code{data.frame} you get back will be in the order you specify.
 
 Default is to return everything.}
+
+\item{line_filter}{A string pattern or regular expression to pass to the
+shell command \code{egrep}. This enables you to filter down the rows of the log
+file to read in much more quickly than reading the whole file into R and then
+subsetting the data in memory---if you know a good filtering string to use.
+It is best only to use this parameter if you're looking for a relatively
+uncommon pattern; if your \code{line_filter} matches all lines, it will be slower
+than omitting it.}
 
 \item{...}{Additional arguments passed to \code{\link[readr:read_delim]{readr::read_delim()}}}
 }

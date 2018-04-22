@@ -1,12 +1,18 @@
 Package: elbr
 Type: Package
-Title: Tools for Analyzing AWS ELB Logs
-Description: Read in ELB log files, compute quantities of interest.
+Title: A Tidy Reader for Load Balancer Logs
+Description: Amazon Web Services' 'Elastic Load Balancer' emits log files in a
+    defined, space-delimited text file format. This package provides tools for
+    reading and exploring those logs. There is an individual file reader, as
+    well as a 'dplyr' backend that enables you to work easily with recursive
+    directories of many log files. All functions are designed to be as fast and
+    efficient as possible, only reading in and stacking together the rows and
+    columns of data you need. 
 Version: 0.3.0
 Authors@R: c(person("Neal", "Richardson", role = c("aut", "cre"),
     email = "neal@crunch.io"))
-URL: https://github.com/Crunch-io/tools/
-BugReports: https://github.com/Crunch-io/tools/issues
+URL: https://github.com/nealrichardson/elbr
+BugReports: https://github.com/nealrichardson/elbr/issues
 License: MIT + file LICENSE
 Depends:
     R (>= 3.0.0),

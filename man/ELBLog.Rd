@@ -33,3 +33,11 @@ in, and methods such as \code{\link[=select]{select()}}, \code{\link[=filter]{fi
 were a single \code{data.frame} in memory, even though constructing that dataset
 would be too slow or perhaps impossible due to resource constraints.
 }
+\examples{
+\dontrun{
+ELBLog("2017-12-15", "2018-01-15") \%>\%
+    select(elb_status_code, request) \%>\%
+    filter(elb_status_code == 200) \%>\%
+    collect()
+}
+}

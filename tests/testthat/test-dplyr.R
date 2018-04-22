@@ -18,12 +18,30 @@ test_that("filter only", {
     expect_true(grepl("226bc5", df$request))
 })
 
+test_that("line_filter only", {
+    df <- ELBLog() %>%
+        line_filter(" -1 -1 504 ") %>%
+        collect()
+    expect_identical(dim(df), c(1L, 15L))
+    expect_true(grepl("226bc5", df$request))
+})
+
 test_that("select twice, with date range", {
     df <- ELBLog("2017-11-15", "2018-01-01") %>%
         select(elb_status_code, user_agent) %>%
         select(elb_status_code) %>%
         collect()
     expect_identical(dim(df), c(97L, 1L))
+})
+
+
+test_that("select twice, with date range and line_filter", {
+    df <- ELBLog("2017-11-15", "2018-01-01") %>%
+        select(elb_status_code, user_agent) %>%
+        line_filter(" -1 -1 504 ") %>%
+        select(elb_status_code) %>%
+        collect()
+    expect_identical(dim(df), c(1L, 1L))
 })
 
 test_that("selected columns are in the requested order", {
