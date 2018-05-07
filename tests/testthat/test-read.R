@@ -29,10 +29,6 @@ public({
     test_that("read_elb with line_filter", {
         df <- read_elb("2017/12/31/example.log", line_filter=" -1 -1 504 ")
         expect_identical(dim(df), c(1L, 15L))
-    })
-    test_that("read_elb with line_filter", {
-        df <- read_elb("2017/12/31/example.log", line_filter=" -1 -1 504 ")
-        expect_identical(dim(df), c(1L, 15L))
         df2 <- read_elb("2017/12/31/example.log", line_filter="WOW64")
         expect_identical(dim(df2), c(94L, 15L))
     })

@@ -36,19 +36,9 @@ read_elb <- function (file,
     col_types[!keepcols] <- "-"
 
     if (!is.null(line_filter)) {
-        ## Shell out to egrep
-        ## If there are no matches, egrep returns status 1, which creates
-        ## a warning in R (with system2 when stdout=TRUE)
-        file <- suppressWarnings(
-            system2("egrep", c(shQuote(line_filter), file), stdout=TRUE)
-        )
-        nmatches <- length(file)
-        ## Concatenate
-        file <- paste(file, collapse="\n")
-        if (nmatches < 2) {
-            ## Append a newline so that readr recognizes this as literal data
-            file <- paste0(file, "\n")
-        }
+        ## Shell out to egrep using pipe
+        cmd <- paste("egrep", shQuote(line_filter), file)
+        file <- pipe(cmd)
     }
     out <- read_delim(
         file,
