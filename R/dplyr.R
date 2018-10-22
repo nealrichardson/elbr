@@ -95,7 +95,7 @@ line_filter.ELBLog <- function (.data, pattern) {
 #' @importFrom tidyselect vars_select
 #' @export
 collect.ELBLog <- function (x, ...) {
-    return(bind_rows(map_elb(x)))
+    return(bind_rows(map_elb(x, ...)))
 }
 
 map_elb <- function (.data, FUN=NULL, ...) {
